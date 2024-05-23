@@ -1,6 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from datetime import datetime
 from jdatetime import date as jdate
@@ -23,7 +26,16 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # Navigate to the webpage
 driver.get('https://www.navasan.net')
-page_source = driver.page_source
+
+# Wait for a specific element to be present
+try:
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "tr[data-code]"))
+    )
+    page_source = driver.page_source
+finally:
+    driver.quit()
+
 soup = BeautifulSoup(page_source, 'html.parser')
 
 # Extract currency exchange rates
@@ -48,7 +60,7 @@ currentTimeInIran = timeInIran.strftime("%H:%M")
 
 # Convert to Shamsi (Persian) date
 shamsi_date = jdate.fromgregorian(date=now.date())
-day_names = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]
+day_names = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"]
 day_of_week = day_names[shamsi_date.weekday()]
 formatted_shamsi_datetime = shamsi_date.strftime(f"{day_of_week} %Y/%m/%d ساعت {currentTimeInIran}")
 
