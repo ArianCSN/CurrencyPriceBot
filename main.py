@@ -1,3 +1,4 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -27,28 +28,43 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 # Navigate to the webpage
 driver.get('https://www.navasan.net')
 
-# Wait for a specific element to be present
+# Wait for the main table to be present
 try:
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "tr[data-code]"))
     )
+    # Wait an additional few seconds to ensure complete loading
+    time.sleep(5)
+    # Get the page source after waiting
     page_source = driver.page_source
 finally:
+    # Ensure the browser is closed properly
     driver.quit()
 
+# Parse the page source with BeautifulSoup
 soup = BeautifulSoup(page_source, 'html.parser')
 
 # Extract currency exchange rates
 currency_rows = soup.find_all('tr', {'data-code': True})
 currency_data = {}
 
+# Helper function to safely extract price text
+def get_price_text(element):
+    if element:
+        return element.text.strip().replace(',', ',')
+    return "N/A"
+
 for row in currency_rows:
     code = row['data-code']
-    price = row.find(class_='price').text.replace(',', ',')
+    price_element = row.find(class_='price')
+    price = get_price_text(price_element)
     currency_data[code] = price
 
-# Close the browser
-driver.quit()
+# Validate that data was extracted correctly
+required_codes = ["usd", "eur", "gbp", "aed", "try", "try_hav", "cad", "cny", "rub", "aud", "sekkeh", "nim", "rob"]
+for code in required_codes:
+    if code not in currency_data or currency_data[code] == "N/A":
+        print(f"Warning: Missing or invalid data for {code}")
 
 # Get the current Gregorian date
 now = datetime.now()
@@ -60,7 +76,7 @@ currentTimeInIran = timeInIran.strftime("%H:%M")
 
 # Convert to Shamsi (Persian) date
 shamsi_date = jdate.fromgregorian(date=now.date())
-day_names = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"]
+day_names = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]
 day_of_week = day_names[shamsi_date.weekday()]
 formatted_shamsi_datetime = shamsi_date.strftime(f"{day_of_week} %Y/%m/%d ساعت {currentTimeInIran}")
 
@@ -89,7 +105,6 @@ formatted_message = f"""
 
 # Send the message via Telegram (if applicable)
 if 23 > int(timeInIran.strftime("%H")) > 10:
-
     # Remove leading/trailing spaces
     formatted_message = formatted_message.strip()
 
