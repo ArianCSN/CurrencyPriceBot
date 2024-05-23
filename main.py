@@ -61,7 +61,7 @@ for row in currency_rows:
     currency_data[code] = price
 
 # Validate that data was extracted correctly
-required_codes = ["usd", "eur", "gbp", "aed", "try", "try_hav", "cad", "cny", "rub", "aud", "sekkeh", "nim", "rob"]
+required_codes = ["usd", "usd_shakhs", "eur", "gbp", "aed", "try", "try_hav", "cad", "cny", "rub", "aud", "sekkeh", "nim", "rob"]
 for code in required_codes:
     if code not in currency_data or currency_data[code] == "N/A":
         print(f"Warning: Missing or invalid data for {code}")
@@ -83,7 +83,7 @@ formatted_shamsi_datetime = shamsi_date.strftime(f"{day_of_week} %Y/%m/%d ساع
 # Create the formatted message
 formatted_message = f"""
 🇺🇸 دلار آمریکا تهران: {currency_data["usd"]}
-🇺🇸 دلار آمریکا حواله: {currency_data["usd"]}
+🇺🇸 دلار آمریکا حواله: {currency_data["usd_shakhs"]}
 🇪🇺 یورو اروپا: {currency_data["eur"]}
 🇬🇧 پوند انگلیس: {currency_data["gbp"]}
 🇦🇪 درهم امارات: {currency_data["aed"]}
