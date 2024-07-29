@@ -61,7 +61,8 @@ for row in currency_rows:
     currency_data[code] = price
 
 # Validate that data was extracted correctly
-required_codes = ["usd", "usd_shakhs", "eur", "gbp", "aed", "try", "try_hav", "cad", "cny", "rub", "aud", "sekkeh", "nim", "rob"]
+required_codes = ["usd", "usd_sherkat", "eur", "gbp", "aed", "try", "try_hav", "cad", "cny", "rub", "aud", "sekkeh",
+                  "nim", "rob", "usd_xau", "18ayar", ]
 for code in required_codes:
     if code not in currency_data or currency_data[code] == "N/A":
         print(f"Warning: Missing or invalid data for {code}")
@@ -97,6 +98,9 @@ formatted_message = f"""
 🌕 سکه: {currency_data['sekkeh']}
 🌕 نیـم سکه: {currency_data['nim']}
 🌕 ربـع سکه: {currency_data['rob']}
+
+🌞 انس طلا: {currency_data['usd_xau']}
+🌞 طلای 18 عیار: {currency_data['18ayar']}
 
 📅 {formatted_shamsi_datetime}
 
